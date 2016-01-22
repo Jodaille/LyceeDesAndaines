@@ -21,7 +21,7 @@ void setup () {
     Wire.begin();
     RTC.begin();
   if (! RTC.isrunning()) {
-    Serial.println("RTC is NOT running!");
+    Serial.println("RTC ne fonctionne pas!");
     // la ligne suivante permet d'ajuster la date & l'heure
     // à la date de compilation du sketc
     RTC.adjust(DateTime(__DATE__, __TIME__));
