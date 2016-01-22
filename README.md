@@ -5,7 +5,7 @@ L'objectif est de connaître l'environnement extérieur et intérieur d'une ruch
 L'idée est de pouvoir anticiper au possible l'essaimage.
 
 Arduino est choisi afin d'initier les élèves au développement logiciel,
-à l'électticité, à l'électronique et à la mesure physique.
+à l'électricité, à l'électronique et à la mesure physique.
 
 ## Sketchs/programmes exemples
 
