@@ -8,14 +8,31 @@
 # script is launched as follow:
 # /home/jody/LyceeDesAndaines/ArduinoToLinux/ReadArduinoSerial.sh < /dev/ttyUSB2
 
+replaceSemicolumn()
+{
+    local searchstring=';'
+    local replacestring='&'
+    local line=$1
+    local query=/a.php?${line//$searchstring/$replacestring}
+    echo $query
+}
 
-searchstring=';'
-replacestring='&'
+hasIdString()
+{
+    case $1 in
+    *id*) return 0 ;;
+    *) return 1 ;;
+    esac
+}
 
 while read line; do
     if [ ! -z "$line" ]; then # we do not want empty line
-        query=/a.php?${line//$searchstring/$replacestring} # test HTTP GET query
-        printf "GET $query HTTP/1.0\r\n\r\n"
+        if hasIdString $line ; then
+            query=$(replaceSemicolumn $line)
+
+            printf "GET $query HTTP/1.0\r\n\r\n"  |nc  jodaille.org 80
+
+        fi
     fi
 done
 
