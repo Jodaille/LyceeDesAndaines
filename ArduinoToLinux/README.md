@@ -44,7 +44,14 @@ Tool to install:
     opkg install screen
 
 
-[ReadArduinoSerial.sh](https://github.com/Jodaille/LyceeDesAndaines/blob/master/ArduinoToLinux/readUSB.sh) is a simple script that read output of serial port (/dev/ttyUSB0)
+[readUSB.sh](https://github.com/Jodaille/LyceeDesAndaines/blob/master/ArduinoToLinux/readUSB.sh) is a simple script that send output of serial port (/dev/ttyUSB0) to [ReadArduinoSerial.sh](https://github.com/Jodaille/LyceeDesAndaines/blob/master/ArduinoToLinux/ReadArduinoSerial.sh) for processing.
 
+
+With screen you can have this process forever, that means it will not ended after your logout from terminal.
 
     screen -Sdm monitImport -s  /readUSB.sh
+
+
+Next step will be to be able to start after the boot (crontab ?) and maybe to check that process exist unless relaunch it.
+
+It could be nice if readUSB.sh could be detect the Arduino port.
