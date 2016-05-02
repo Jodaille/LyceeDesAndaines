@@ -12,7 +12,7 @@
 #include <OneWire.h>
 
 // Le fil jaune des données est relié au port suivant:
-const int dsPin = 10;
+const int dsPin = 2;
 
 
 OneWire  ds(dsPin);
@@ -24,6 +24,7 @@ void setup(void) {
    * des capteurs en présence
    */
   getDeviceAddress();
+;
 }
 
 /**

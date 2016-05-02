@@ -18,8 +18,12 @@
  */
 #include <DallasTemperature.h>
  
-// Le fil des données (jaune?) est relié au pin 10 du Arduino
-#define ONE_WIRE_BUS 10
+/* 
+ *  Le fil des données (jaune?) est relié au pin 2 (D2) du Arduino
+ *  une resistance de 4,7kOhm est placée en 5V et D2
+ */
+
+#define ONE_WIRE_BUS 2
  
 /** 
  * Création d'une instance oneWire afin de pouvoir 
@@ -38,7 +42,7 @@ DallasTemperature sensors(&oneWire);
  * Adresses du capteur, cf: https://git.io/vwM2x
  * pour scanner l'adresse de votre capteur
  */
-DeviceAddress temperature1 = { 0x28, 0x01, 0x37, 0x29, 0x07, 0x00, 0x00, 0x65 };
+DeviceAddress temperature1 = { 0x28, 0xEF, 0x40, 0x1E, 0x07, 0x00, 0x00, 0xAD };
 
 void setup(void)
 {
