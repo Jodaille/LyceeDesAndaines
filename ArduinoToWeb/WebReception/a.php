@@ -18,6 +18,7 @@ else
 Arduino sketch send a string with this parameters:
 Serial.print("id=");
 Serial.print("pression=");
+Serial.print("t1=");
 Serial.print("A1=");
 Serial.print("A2=");
 Serial.print("milli=");
@@ -25,12 +26,13 @@ cf: LogTestToWeb.ino
 */
 
 $pression = $g['pression'];
+$temp1  = $g['t1'];
 $analog1  = $g['A1'];
 $analog2  = $g['A2'];
 $milli    = $g['milli'];
 $time     = date('Y-m-d H:i:s');
 
-$log = "$time $arduino_id $pression $analog1 $analog1 $milli\n";
+$log = "$time $arduino_id $pression $temp1 $analog1 $analog1 $milli\n";
 file_put_contents('/tmp/arduino.log', $log, FILE_APPEND);
 
 echo "$log";die();
