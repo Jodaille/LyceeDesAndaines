@@ -56,11 +56,42 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress temperature1 = { 0x28, 0x80, 0xA0, 0x2A, 0x07, 0x00, 0x00, 0xD6 };
 DeviceAddress temperature2 = { 0x28, 0x62, 0xB9, 0x29, 0x07, 0x00, 0x00, 0x96 };
 
+
+/**
+ * Écriture sur une carte SD
+ * 
+ * SD card reliée au bus SPI :
+ * MOSI       - pin 11 
+ * MISO       - pin 12
+ * CLK ou SCK - pin 13
+ * CS         - pin 4
+ *
+ * SPI pour Serial Peripheral Interface
+ * 
+ * created  24 Nov 2010
+ * modified 9 Apr 2012
+ * by Tom Igoe
+ * cf: https://www.arduino.cc/en/Tutorial/Datalogger
+ */
+#include <SPI.h>
+#include <SD.h>
+
+// Arduino Uno pin 4
+// cf: https://www.arduino.cc/en/Reference/SPI
+const int chipSelect = 4;
+
+bool sDisReady = false;
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.print(__FILE__ " " __DATE__ " " __TIME__);
   Serial.println("  IDE "); Serial.println(ARDUINO);
+
+  if(SD.begin(chipSelect))
+  {
+    sDisReady = true;
+  }
 
   // Initialisation de notre librairie
   sensors.begin();  
@@ -79,46 +110,60 @@ void loop() {
 
     // save the last time you blinked the LED 
     previousMillis = currentMillis;
+    
+    String tolog = builString();
+    Serial.println(tolog);
+    if (sDisReady) {
+      /**
+       * nous ouvrons le fichier
+       * Nb: un seul fichier peut être ouvert à la fois
+       * le fichier se nomme : journal.csv
+       */
+      File dataFile = SD.open("journal.csv", FILE_WRITE);
+      // si le fichier est disponnible, nous écrivons dedans :
+      if (dataFile) {
+        dataFile.println(tolog);
+        dataFile.close();
+      }
+    }
+ }
 
-    Serial.print("id=");
-    Serial.print("rucheA");
-    Serial.print(";");
+}
 
-    /**
-    * Nous interrogeons notre capteur
-    */
-    sensors.requestTemperatures(); // envoi de la demande
+String builString()
+{
+  String dataString = "id=rucheA;";
 
+  sensors.requestTemperatures(); // envoi de la demande
    /**
    * temperature1 est un tableau contenant l'adresse
    * de notre capteur.
    * cf: https://git.io/vwM2x pour scanner les adresses
    */
-    Serial.print("t1=");
-    Serial.print(sensors.getTempC(temperature1));
-    Serial.print(";");
+  dataString += "t1=";
+  dataString += String(sensors.getTempC(temperature1));
+  dataString += ";";
 
-    Serial.print("t2=");
-    Serial.print(sensors.getTempC(temperature2));
-    Serial.print(";");
+  dataString += "t2=";
+  dataString += String(sensors.getTempC(temperature2));
+  dataString += ";";
 
-    Serial.print("pression=");
-    Serial.print(pression());
-    Serial.print(";");
+  dataString += "pression=";
+  dataString += String(pression());
+  dataString += ";";
 
-    Serial.print("A1=");
-    Serial.print(analogRead(A1));
-    Serial.print(";");
+  dataString += "A1=";
+  dataString += analogRead(A1);
+  dataString += ";";
 
-    Serial.print("A2=");
-    Serial.print(analogRead(A2));
-    Serial.print(";");
+  dataString += "A2=";
+  dataString += analogRead(A2);
+  dataString += ";";
 
-    Serial.print("milli=");
-    Serial.print(millis());
-    Serial.println();
- }
-
+  dataString += "milli=";
+  dataString += String(millis());
+  dataString += ";";
+  return dataString;
 }
 
 float pression()
