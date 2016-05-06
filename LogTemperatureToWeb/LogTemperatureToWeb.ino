@@ -52,7 +52,9 @@ DallasTemperature sensors(&oneWire);
  * Adresses du capteur, cf: https://git.io/vwM2x
  * pour scanner l'adresse de votre capteur
  */
-DeviceAddress temperature1 = { 0x28, 0xEF, 0x40, 0x1E, 0x07, 0x00, 0x00, 0xAD };
+//DeviceAddress temperature1 = { 0x28, 0xEF, 0x40, 0x1E, 0x07, 0x00, 0x00, 0xAD };
+DeviceAddress temperature1 = { 0x28, 0x80, 0xA0, 0x2A, 0x07, 0x00, 0x00, 0xD6 };
+DeviceAddress temperature2 = { 0x28, 0x62, 0xB9, 0x29, 0x07, 0x00, 0x00, 0x96 };
 
 void setup() {
   // put your setup code here, to run once:
@@ -79,7 +81,7 @@ void loop() {
     previousMillis = currentMillis;
 
     Serial.print("id=");
-    Serial.print("ruche1");
+    Serial.print("rucheA");
     Serial.print(";");
 
     /**
@@ -94,6 +96,10 @@ void loop() {
    */
     Serial.print("t1=");
     Serial.print(sensors.getTempC(temperature1));
+    Serial.print(";");
+
+    Serial.print("t2=");
+    Serial.print(sensors.getTempC(temperature2));
     Serial.print(";");
 
     Serial.print("pression=");
