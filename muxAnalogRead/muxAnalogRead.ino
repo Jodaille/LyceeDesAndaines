@@ -42,7 +42,7 @@ void initPortes(int nombreDePortes)
     portes[n].pinentree    = pinentree;
     portes[n].pinsortie    = pinsortie;
     portes[n].tempsLecture = 0;
-    /** 
+    /**
      *  nous ajoutons 2 pour faire suivre
      *  les pins entree sortie de chaque
      *  porte
@@ -77,8 +77,7 @@ void setup()
   mux.signalPin(A0, INPUT, ANALOG);
 }
 
-// Reads the 16 channels and reports on the serial monitor
-// the corresponding value read by the A/D converter
+
 void loop()
 {
   int valeurEntree;
@@ -88,9 +87,13 @@ void loop()
    */
   for (int i = 0; i < nbPortes; ++i)
   {
+    // Nous conservons le temps de la precedente lecture
     long lecturePrecedente = portes[i].tempsLecture;
+
+    // Nous conservons les millis de la lecture
     long temps = millis();
     portes[i].tempsLecture = temps;
+
     /**
      * nous recuperons les pins correpondants
      * aux capteurs d'entree et de sortie
@@ -105,6 +108,7 @@ void loop()
     valeurSortie   = mux.read(pinSortie);
     long lectureMs = portes[i].tempsLecture;
 
+    // Nous affichons le resultat
     Serial.print("Porte:");
     Serial.print(i);
     Serial.print(" entree:");
