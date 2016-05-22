@@ -1,3 +1,8 @@
+/**
+ * credits:
+ * https://skyduino.wordpress.com/2011/12/29/tutoriel-arduino-et-emetteurrecepteur-433mhz-virtualwire/
+ */
+
 #include <VirtualWire.h> // inclusion de la librairie VirtualWire
 
 // reception par defaut sur pinout 11 (DATA)
