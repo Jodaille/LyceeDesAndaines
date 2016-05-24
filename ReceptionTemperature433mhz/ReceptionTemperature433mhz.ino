@@ -7,7 +7,11 @@
 
 // reception par defaut sur pinout 11 (DATA)
 
-struct data_t {int temperature; int humidity;}; // user defined data structure
+struct data_t {
+    int temperature;
+    int humidity;
+    byte voltage;
+    }; // user defined data structure
 data_t data; // define a variable with that structure
 
 void setup() // Fonction setup()
@@ -41,16 +45,19 @@ void loop() // Fonction loop()
             if (buflen == sizeof(data_t)){
                 memcpy( &data, buf, sizeof(data));
 
-                Serial.print("RX : T°C: ");
-
-
                 float temperature = data.temperature/(float)100;
+                float humidity = data.humidity/(float)100;
+                byte voltage = data.voltage;
+
+                Serial.print("RX: ");
+
+                Serial.print(" V: ");
+                Serial.print(voltage);
+
+                Serial.print(" T°C: ");
                 Serial.print(temperature);
-                //Serial.print(" / ");Serial.print(data.temperature);
 
                 Serial.print(" hum.: ");
-
-                float humidity = data.humidity/(float)100;
                 Serial.print(humidity, 2);
 
                 Serial.println("");
