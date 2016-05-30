@@ -1,0 +1,2 @@
+*/1 * * * * (/root/checkReadUSB1.sh >> /dev/null)
+*/1 * * * * (/root/checkReadUSB.sh >> /dev/null)
