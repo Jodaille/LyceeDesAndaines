@@ -16,7 +16,7 @@ data_t data; // define a variable with that structure
 
 void setup() // Fonction setup()
 {
-    Serial.begin(115200); // Initialisation du port série pour avoir un retour sur le serial monitor
+    Serial.begin(9600); // Initialisation du port série pour avoir un retour sur le serial monitor
     Serial.println("Reception VirtualWire"); // Petit message de bienvenue
 
     vw_setup(2000); // initialisation de la librairie VirtualWire à 2000 bauds (note: je n'utilise pas la broche PTT)
@@ -49,15 +49,15 @@ void loop() // Fonction loop()
                 float humidity = data.humidity/(float)100;
                 byte voltage = data.voltage;
 
-                Serial.print("RX: ");
+                Serial.print("id=rucheBas;");
 
-                Serial.print(" V: ");
+                Serial.print("V=");
                 Serial.print(voltage);
 
-                Serial.print(" T°C: ");
+                Serial.print(";t1=");
                 Serial.print(temperature);
 
-                Serial.print(" hum.: ");
+                Serial.print(";h=");
                 Serial.print(humidity, 2);
 
                 Serial.println("");
