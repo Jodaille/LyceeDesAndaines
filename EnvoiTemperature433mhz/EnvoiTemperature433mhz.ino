@@ -10,10 +10,11 @@
 * Jeelabs stuff voltage + sleep
 * @see http://jeelabs.org/2012/05/12/improved-vcc-measurement/
 */
-#include <VirtualWire.h> // inclusion de la librairie VirtualWire
+//
 #include <JeeLib.h>
 #include <avr/sleep.h>
 
+#include <VirtualWire.h> // inclusion de la librairie VirtualWire
 
 volatile bool adcDone;
 ISR(WDT_vect) { Sleepy::watchdogEvent(); }
