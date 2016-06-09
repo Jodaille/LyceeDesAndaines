@@ -6,11 +6,14 @@
  */
 #define DEBUG   0 // set to 1 to trace activity via serial console
 
+#define SENSORID 13
+
 /**
 * Jeelabs stuff voltage + sleep
 * @see http://jeelabs.org/2012/05/12/improved-vcc-measurement/
 */
 //
+
 #include <JeeLib.h>
 #include <avr/sleep.h>
 
@@ -38,6 +41,7 @@ struct data_t {
     int temperature;
     int humidity;
     byte voltage;
+    byte id;
     }; // user defined data structure
 data_t data; // define a variable with that structure
 
@@ -89,7 +93,7 @@ void loop() // Fonction loop()
             float temperature = DHT11.temperature;
             float humidity = DHT11.humidity;
 
-
+            data.id = SENSORID;
             data.temperature = temperature*100;
             data.humidity= humidity*100;
             data.voltage = x;
