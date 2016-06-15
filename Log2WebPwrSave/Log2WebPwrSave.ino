@@ -4,23 +4,43 @@
  *
  */
 
+#define DEBUG   0 // set to 1 to trace activity via serial console
+// pour ajuster l'heure changer en : true
+bool definirHeure = false;
+
+#define SENSORID 13
+
 #include <JeeLib.h>
 #include <avr/sleep.h>
 
-#define PREPTEMP_DELAY  8    	// how long to wait for DS18B20 sensor to stabilise, in tenths of seconds
-#define BATT_SENSE_PORT 3		// sense battery voltage on this port
-#define MEASURE_INTERVAL  595 	// how long between measurements, in tenths of seconds
-								// 592 + 8 = 600 i.e. 1 minute
-#define SLEEP_DURATION 10000
-
-// The JeeLib scheduler makes it easy to perform various tasks at various times:
-//enum { PREPTEMP, MEASUREALL, TASK_END };
-//static word schedbuf[TASK_END];
-//Scheduler scheduler (schedbuf, TASK_END);
-
-// because we're using the watchdog timer for low-power waiting
+volatile bool adcDone;
 ISR(WDT_vect) { Sleepy::watchdogEvent(); }
+ISR(ADC_vect) { adcDone = true; }
+static byte vccRead (byte count =4) {
+  set_sleep_mode(SLEEP_MODE_ADC);
+  ADMUX = bit(REFS0) | 14; // use VCC and internal bandgap
+  bitSet(ADCSRA, ADIE);
+  while (count-- > 0) {
+    adcDone = false;
+    while (!adcDone)
+      sleep_mode();
+  }
+  bitClear(ADCSRA, ADIE);
+  // convert ADC readings to fit in one byte, i.e. 20 mV steps:
+  //  1.0V = 0, 1.8V = 40, 3.3V = 115, 5.0V = 200, 6.0V = 250
+  return (55U * 1023U) / (ADC + 1) - 50;
+}
 
+struct data_t {
+    int toptemperature;
+    int entrytemperature;
+    int humidity;
+    byte voltage;
+    byte id;
+    }; // user defined data structure
+data_t data; // define a variable with that structure
+
+#define SLEEP_DURATION 10000 * 3
 
 /**
  *  Nous utilisons la librairie OneWire
@@ -115,15 +135,10 @@ bool sDisReady = false;
 #include "RTClib.h"
 RTC_DS1307 RTC;
 
-// pour ajuster l'heure changer en : true
-bool definirHeure = false;
-
-
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  Serial.print(__FILE__ " " __DATE__ " " __TIME__);
-  Serial.println("  IDE "); Serial.println(ARDUINO);
+  Serial.println(__FILE__ " " __DATE__ " " __TIME__);
 
   if(SD.begin(chipSelect))
   {
@@ -172,9 +187,9 @@ void loop() {
 
 String builString()
 {
-    String dataString = "id=rucheA;";
-
-    dataString += "time=";
+    String dataString = "id=";
+    dataString += SENSORID;
+    dataString += ";time=";
     dataString += buildTime();
     dataString += ";";
 
@@ -194,17 +209,12 @@ String builString()
     dataString += String(sensors.getTempC(temperature2));
     dataString += ";";
 
-    dataString += "pression=";
-    dataString += String(pression());
+    byte x = vccRead();
+    Sleepy::loseSomeTime(16);
+    dataString += "v=";
+    dataString += String(x);
     dataString += ";";
 
-    dataString += "A1=";
-    dataString += analogRead(A1);
-    dataString += ";";
-
-    dataString += "A2=";
-    dataString += analogRead(A2);
-    dataString += ";";
 
     dataString += "milli=";
     dataString += String(millis());
@@ -217,49 +227,52 @@ String builString()
  */
 String buildTime()
 {
-  DateTime now = RTC.now();
-  String dateString = String(now.year());
-
-  dateString += "-";
-  int month = now.month();
-  if(month<10)
+  String dateString = "";
+  if(RTC.isrunning())
   {
-    dateString += "0";
+    DateTime now = RTC.now();
+    dateString += String(now.year());
+  
+    dateString += "-";
+    int month = now.month();
+    if(month<10)
+    {
+      dateString += "0";
+    }
+    dateString += month;
+  
+    dateString += "-";
+    int day = now.day();
+    if(day<10)
+    {
+      dateString += "0";
+    }
+    dateString += day;
+  
+    dateString += " ";
+    int hour = now.hour();
+    if(hour<10)
+    {
+      dateString += "0";
+    }
+    dateString += hour;
+  
+    dateString += ":";
+    int minute = now.minute();
+    if(minute<10)
+    {
+      dateString += "0";
+    }
+    dateString += minute;
+  
+    dateString += ":";
+    int second = now.second();
+    if(second<10)
+    {
+      dateString += "0";
+    }
+    dateString += second;
   }
-  dateString += month;
-
-  dateString += "-";
-  int day = now.day();
-  if(day<10)
-  {
-    dateString += "0";
-  }
-  dateString += day;
-
-  dateString += " ";
-  int hour = now.hour();
-  if(hour<10)
-  {
-    dateString += "0";
-  }
-  dateString += hour;
-
-  dateString += ":";
-  int minute = now.minute();
-  if(minute<10)
-  {
-    dateString += "0";
-  }
-  dateString += minute;
-
-  dateString += ":";
-  int second = now.second();
-  if(second<10)
-  {
-    dateString += "0";
-  }
-  dateString += second;
-
   return dateString;
 }
 
