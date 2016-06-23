@@ -28,6 +28,9 @@ static byte vccRead (byte count =4) {
   bitClear(ADCSRA, ADIE);
   // convert ADC readings to fit in one byte, i.e. 20 mV steps:
   //  1.0V = 0, 1.8V = 40, 3.3V = 115, 5.0V = 200, 6.0V = 250
+  /*
+  147 = 3,91V
+  */
   return (55U * 1023U) / (ADC + 1) - 50;
 }
 
@@ -232,7 +235,7 @@ String buildTime()
   {
     DateTime now = RTC.now();
     dateString += String(now.year());
-  
+
     dateString += "-";
     int month = now.month();
     if(month<10)
@@ -240,7 +243,7 @@ String buildTime()
       dateString += "0";
     }
     dateString += month;
-  
+
     dateString += "-";
     int day = now.day();
     if(day<10)
@@ -248,7 +251,7 @@ String buildTime()
       dateString += "0";
     }
     dateString += day;
-  
+
     dateString += " ";
     int hour = now.hour();
     if(hour<10)
@@ -256,7 +259,7 @@ String buildTime()
       dateString += "0";
     }
     dateString += hour;
-  
+
     dateString += ":";
     int minute = now.minute();
     if(minute<10)
@@ -264,7 +267,7 @@ String buildTime()
       dateString += "0";
     }
     dateString += minute;
-  
+
     dateString += ":";
     int second = now.second();
     if(second<10)
