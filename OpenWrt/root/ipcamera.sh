@@ -31,9 +31,15 @@ PRESET2="command=32"
 
 
 #echo $SNAPURL
+NOW=$(/bin/date +"%Y-%m-%d-%H%M%S")
 
 wget $SNAPURL -O /tmp/snapshot.jpg
 
-# Example of queries:
+
+echo date is: $NOW
+
+scp -i /etc/dropbear/dropbear_rsa_host_key /tmp/snapshot.jpg jobee@jodaille.org:/home/jobee/snapshots/$NOW.jpg
+
+
 #http://192.168.0.19/decoder_control.cgi?loginuse=admin&loginpas=&command=2
 # http://192.168.0.19/decoder_control.cgi?loginuse=admin&loginpas=&command=31&onestep=0&sit=31&14724919849090.09144154703244567&_=1472491984917
