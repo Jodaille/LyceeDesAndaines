@@ -7,6 +7,8 @@
 
 #define DEBUG   1 // set to 1 to trace activity via serial console
 
+#define RainSensor A7
+
 /**
     Wire is need for I2C
     TSL2561
@@ -59,6 +61,7 @@ struct data_t {
     int entrytemperature;
     float humidity;
     float SI7021Temp;
+    unsigned int RainFall;
     byte voltage;
     byte id;
     }; // user defined data structure
@@ -161,10 +164,16 @@ void loop()
             Serial.println("no BMP");
         #endif
     }
+
     data.humidity   = SI7021.getRH();
     data.SI7021Temp = SI7021.getTemp();
     #if DEBUG
         Serial.print("Humidity:");Serial.print(data.humidity); Serial.print("% ");
         Serial.print("SI7021Temp:");Serial.print(data.SI7021Temp); Serial.println("°C");
+    #endif
+
+    data.RainFall = analogRead(RainSensor);
+    #if DEBUG
+        Serial.print("RainFall:");Serial.println(data.RainFall);
     #endif
 }
