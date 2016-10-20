@@ -10,7 +10,7 @@
 /**
     Wire is need for I2C
     TSL2561
-
+    BMP280
 */
 #include <Wire.h>
 
@@ -22,9 +22,16 @@ https://github.com/sparkfun/SparkFun_TSL2561_Arduino_Library
 */
 #include <SparkFunTSL2561.h>
 
-// Create an SFE_TSL2561 object, here called "light":
+/*
+BMP280
+*/
+#include "BMP280.h"
 
+// Create an SFE_TSL2561 object, here called "light":
 SFE_TSL2561 light;
+
+// BMP280 bmp;
+BMP280 bmp;
 
 // Global variables:
 
@@ -33,7 +40,9 @@ unsigned int TSLms;  // Integration ("shutter") time in milliseconds
 
 
 struct data_t {
-    double lux
+    double lux;
+    double bmpP;
+    double bmpT;
     int toptemperature;
     int entrytemperature;
     int humidity;
@@ -71,6 +80,11 @@ void setup()
   #endif
 
   light.setPowerUp();
+
+  if(!bmp.begin()){
+    Serial.println("BMP init failed!");
+  }
+  bmp.setOversampling(4);
 }
 
 void loop()
@@ -79,6 +93,8 @@ void loop()
     // There are two light sensors on the device, one for visible light
     // and one for infrared. Both sensors are needed for lux calculations.
     unsigned int data0, data1;
+    double bmpT,bmpP;
+
     if (light.getData(data0,data1))
     {
         #if DEBUG
@@ -101,5 +117,21 @@ void loop()
             Serial.print("lux: ");
             Serial.println(TSLlux);
         #endif
+    }
+    char bmpResult = bmp.startMeasurment();
+    if(bmpResult!=0)
+    {
+        bmpResult = bmp.getTemperatureAndPressure(bmpT,bmpP);
+
+        if(bmpResult!=0)
+        {
+            data.bmpP = bmpP;
+            data.bmpT = bmpT;
+            #if DEBUG
+                Serial.print("bmpT:");Serial.print(bmpT,2); Serial.print(" degC ");
+                Serial.print("bmpP:");Serial.print(bmpP,2); Serial.println(" mBar");
+            #endif
+
+        }
     }
 }
