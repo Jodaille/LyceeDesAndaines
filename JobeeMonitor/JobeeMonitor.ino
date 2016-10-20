@@ -27,11 +27,20 @@ BMP280
 */
 #include "BMP280.h"
 
+/*
+Si7021 temperature and humidity sensor
+https://github.com/sparkfun/Si7021_Breakout/tree/master/Libraries
+*/
+#include "SparkFun_Si7021_Breakout_Library.h"
+
 // Create an SFE_TSL2561 object, here called "light":
 SFE_TSL2561 light;
 
 // BMP280 bmp;
 BMP280 bmp;
+
+//Create Instance of HTU21D or SI7021 temp and humidity sensor and MPL3115A2 barrometric sensor
+Weather SI7021;
 
 // Global variables:
 
@@ -39,13 +48,17 @@ boolean TSLgain;     // Gain setting, 0 = X1, 1 = X16;
 unsigned int TSLms;  // Integration ("shutter") time in milliseconds
 
 
+float SI7021Humidity = 0;
+float SI7021Temp     = 0;
+
 struct data_t {
     double lux;
     double bmpP;
     double bmpT;
     int toptemperature;
     int entrytemperature;
-    int humidity;
+    float humidity;
+    float SI7021Temp;
     byte voltage;
     byte id;
     }; // user defined data structure
@@ -85,6 +98,9 @@ void setup()
     Serial.println("BMP init failed!");
   }
   bmp.setOversampling(4);
+
+  //Initialize SI7021 sensor
+  SI7021.begin();
 }
 
 void loop()
@@ -118,6 +134,12 @@ void loop()
             Serial.println(TSLlux);
         #endif
     }
+    else
+    {
+        #if DEBUG
+            Serial.println("no light sensor");
+        #endif
+    }
     char bmpResult = bmp.startMeasurment();
     if(bmpResult!=0)
     {
@@ -131,7 +153,18 @@ void loop()
                 Serial.print("bmpT:");Serial.print(bmpT,2); Serial.print(" degC ");
                 Serial.print("bmpP:");Serial.print(bmpP,2); Serial.println(" mBar");
             #endif
-
         }
     }
+    else
+    {
+        #if DEBUG
+            Serial.println("no BMP");
+        #endif
+    }
+    data.humidity   = SI7021.getRH();
+    data.SI7021Temp = SI7021.getTemp();
+    #if DEBUG
+        Serial.print("Humidity:");Serial.print(data.humidity); Serial.print("% ");
+        Serial.print("SI7021Temp:");Serial.print(data.SI7021Temp); Serial.println("°C");
+    #endif
 }
