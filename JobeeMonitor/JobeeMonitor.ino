@@ -9,6 +9,17 @@
 
 #define RainSensor A7
 
+/*
+    Raingauge
+
+    http://atelier-meteo-arduino-lycee-vincendo.blogspot.fr/p/le-pluviometre.html
+*/
+#define  Bucket_Size 0.2794 // bucket size to trigger tip (count was 0.01)
+const    byte interruptRainGauge = 2;
+volatile unsigned long tipCount; // bucket tip counter used in interrupt routine
+volatile unsigned long contactTime; // Timer to manage any contact bounce in interrupt routine
+volatile float totalRainfall; // total amount of rainfall detected
+
 /**
     Wire is need for I2C
     TSL2561
@@ -16,22 +27,23 @@
 */
 #include <Wire.h>
 
-/* SparkFun TSL2561 library
-Product page: https://www.sparkfun.com/products/11824
-Hook-up guide: https://learn.sparkfun.com/tutorials/getting-started-with-the-tsl2561-luminosity-sensor
+/*
+    SparkFun TSL2561 library
+    Product page: https://www.sparkfun.com/products/11824
+    Hook-up guide: https://learn.sparkfun.com/tutorials/getting-started-with-the-tsl2561-luminosity-sensor
 
-https://github.com/sparkfun/SparkFun_TSL2561_Arduino_Library
+    https://github.com/sparkfun/SparkFun_TSL2561_Arduino_Library
 */
 #include <SparkFunTSL2561.h>
 
 /*
-BMP280
+    BMP280
 */
 #include "BMP280.h"
 
 /*
-Si7021 temperature and humidity sensor
-https://github.com/sparkfun/Si7021_Breakout/tree/master/Libraries
+    Si7021 temperature and humidity sensor
+    https://github.com/sparkfun/Si7021_Breakout/tree/master/Libraries
 */
 #include "SparkFun_Si7021_Breakout_Library.h"
 
@@ -62,9 +74,11 @@ struct data_t {
     float humidity;
     float SI7021Temp;
     unsigned int RainFall;
+    float totalRainfall;
     byte voltage;
     byte id;
     }; // user defined data structure
+
 data_t data; // define a variable with that structure
 
 void setup()
@@ -72,6 +86,13 @@ void setup()
   // Initialize the Serial port:
   Serial.begin(9600);
 
+  // Rain gauge initialisation
+  tipCount = 0;
+  totalRainfall = 0;
+  //Pullup reistance like push button to detect raingauge tip
+  pinMode(interruptRainGauge, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(interruptRainGauge),rainIncrement,FALLING);
+  sei();// Enable Interrupts
 
   #if DEBUG
     Serial.println("Initialize TSL2561");Serial.flush();
@@ -174,6 +195,18 @@ void loop()
 
     data.RainFall = analogRead(RainSensor);
     #if DEBUG
-        Serial.print("RainFall:");Serial.println(data.RainFall);
+        Serial.print("RainFall:");Serial.print(data.RainFall);
+        Serial.print(" RainLevel:");Serial.println(totalRainfall);
     #endif
 }
+
+// Interrupt handler routine that is triggered when the rg-11 detects rain
+void rainIncrement()
+{
+    if((millis() - contactTime) > 15 ) { // debounce of sensor signal
+        tipCount++;
+        totalRainfall = tipCount * Bucket_Size;
+        contactTime = millis();
+    }
+}
+// end of rg-11 rain detection interrupt handler
