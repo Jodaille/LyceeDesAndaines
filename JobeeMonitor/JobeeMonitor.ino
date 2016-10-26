@@ -7,6 +7,17 @@
 
 #define DEBUG   0 // set to 1 to trace activity via serial console
 
+
+#include <JeeLib.h>
+#include <avr/sleep.h>
+
+volatile bool adcDone;
+ISR(WDT_vect) { Sleepy::watchdogEvent(); }
+ISR(ADC_vect) { adcDone = true; }
+
+#define SLEEP_DURATION 1000 * 10
+
+
 #define RainSensor A7
 
 /*
@@ -204,6 +215,8 @@ void loop()
     String tolog = builString();
     Serial.println(tolog);
     Serial.flush();delay(5);
+    Sleepy::loseSomeTime(SLEEP_DURATION);
+
 }
 
 // Interrupt handler routine that is triggered when the rg-11 detects rain
