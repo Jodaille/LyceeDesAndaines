@@ -39,6 +39,12 @@ volatile float totalRainfall; // total amount of rainfall detected
 #include <Wire.h>
 
 /*
+DS3231 RTC https://github.com/adafruit/RTClib
+*/
+#include "RTClib.h"
+RTC_DS3231 rtc;
+
+/*
     SparkFun TSL2561 library
     Product page: https://www.sparkfun.com/products/11824
     Hook-up guide: https://learn.sparkfun.com/tutorials/getting-started-with-the-tsl2561-luminosity-sensor
@@ -87,6 +93,7 @@ struct data_t {
     unsigned int RainFall;
     float totalRainfall;
     byte voltage;
+    unsigned int time;
     byte id;
     }; // user defined data structure
 
@@ -136,6 +143,21 @@ void setup()
 
   //Initialize SI7021 sensor
   SI7021.begin();
+
+  if (! rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+  }
+  else
+  {
+      if (rtc.lostPower()) {
+          Serial.println("RTC lost power, lets set the time!");
+          // following line sets the RTC to the date & time this sketch was compiled
+          rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+          // This line sets the RTC with an explicit date & time, for example to set
+          // January 21, 2014 at 3am you would call:
+          // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
+      }
+  }
 }
 
 void loop()
@@ -145,6 +167,9 @@ void loop()
     // and one for infrared. Both sensors are needed for lux calculations.
     unsigned int data0, data1;
     double bmpT,bmpP;
+
+    DateTime now = rtc.now();
+    data.time = now.unixtime();
 
     if (light.getData(data0,data1))
     {
@@ -175,6 +200,7 @@ void loop()
             Serial.println("no light sensor");
         #endif
     }
+
     char bmpResult = bmp.startMeasurment();
     if(bmpResult!=0)
     {
