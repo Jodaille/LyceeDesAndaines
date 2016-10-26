@@ -5,7 +5,7 @@
  *
  */
 
-#define DEBUG   1 // set to 1 to trace activity via serial console
+#define DEBUG   0 // set to 1 to trace activity via serial console
 
 #define RainSensor A7
 
@@ -194,10 +194,16 @@ void loop()
     #endif
 
     data.RainFall = analogRead(RainSensor);
+    data.totalRainfall = totalRainfall;
+
     #if DEBUG
         Serial.print("RainFall:");Serial.print(data.RainFall);
         Serial.print(" RainLevel:");Serial.println(totalRainfall);
     #endif
+
+    String tolog = builString();
+    Serial.println(tolog);
+    Serial.flush();delay(5);
 }
 
 // Interrupt handler routine that is triggered when the rg-11 detects rain
@@ -210,3 +216,68 @@ void rainIncrement()
     }
 }
 // end of rg-11 rain detection interrupt handler
+
+String builString()
+{
+    String dataString = "id=Danvou;";
+
+
+    //sensors.requestTemperatures(); // envoi de la demande
+    /**
+    * temperature1 est un tableau contenant l'adresse
+    * de notre capteur.
+    * cf: https://git.io/vwM2x pour scanner les adresses
+    double lux;
+    double bmpP;
+    double bmpT;
+    int toptemperature;
+    int entrytemperature;
+    float humidity;
+    float SI7021Temp;
+    unsigned int RainFall;
+    float totalRainfall;
+    byte voltage;
+    byte id;
+    */
+
+    dataString += "lux=";
+    dataString += String(data.lux);
+    dataString += ";";
+
+    dataString += "bmpP=";
+    dataString += String(data.bmpP);
+    dataString += ";";
+
+    dataString += "bmpT=";
+    dataString += String(data.bmpT);
+    dataString += ";";
+
+    dataString += "topT=";
+    dataString += String(data.toptemperature);
+    dataString += ";";
+
+    dataString += "entryT=";
+    dataString += String(data.entrytemperature);
+    dataString += ";";
+
+    dataString += "h=";
+    dataString += String(data.humidity);
+    dataString += ";";
+
+    dataString += "siT=";
+    dataString += String(data.SI7021Temp);
+    dataString += ";";
+
+    dataString += "rainLevel=";
+    dataString += String(data.totalRainfall);
+    dataString += ";";
+
+    dataString += "RainFall=";
+    dataString += String(data.RainFall);
+    dataString += ";";
+
+    dataString += "milli=";
+    dataString += String(millis());
+    dataString += ";";
+    return dataString;
+}
