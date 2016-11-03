@@ -1,6 +1,9 @@
 <?php
-// /var/www/wiki/snapshots
-// 2016-11-01
+/**
+* List for previewing daily images
+* @author: Jodaille
+* https://github.com/Jodaille/LyceeDesAndaines/blob/master/snapshots/preview.php
+*/
 
 $date = new DateTime('now');
 $ymd = $date->format('Y-m-d');
@@ -26,9 +29,19 @@ foreach($aImages as $img)
 }
 $firstImage = $aDatas[0];
 $jsonData = json_encode($aDatas);
+?>
+<!doctype html>
+    <html lang="fr">
+    <head>
+        <meta charset="utf-8">
+        <title>Preview of beehive entry snapshots</title>
+    </head>
+<body>
+<?php
 echo '<img id="imgPreview" src="' . $firstImage['src'] . '" />'
 . '<span id="time">' . $firstImage['time'] . "</span>\n";
 ?>
+</body>
 <script type="text/javascript">
 window.onload = function() {
     var imagesDatas  = <?php echo $jsonData; ?>;
@@ -54,3 +67,4 @@ window.onload = function() {
 
 
 </script>
+</html>
