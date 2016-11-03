@@ -37,10 +37,15 @@ $jsonData = json_encode($aDatas);
         <title>Preview of beehive entry snapshots</title>
     </head>
 <body>
+    <div class="preview">
+        <p>Daily images: <?php echo $ymd; ?></p>
+        <p>see: https://github.com/Jodaille/LyceeDesAndaines/blob/master/snapshots/preview.php</p>
+
 <?php
 echo '<img id="imgPreview" src="' . $firstImage['src'] . '" />'
 . '<span id="time">' . $firstImage['time'] . "</span>\n";
 ?>
+    </div>
 </body>
 <script type="text/javascript">
 window.onload = function() {
