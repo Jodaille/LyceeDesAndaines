@@ -4,15 +4,27 @@
 * @author: Jodaille
 * https://github.com/Jodaille/LyceeDesAndaines/blob/master/snapshots/preview.php
 */
+if(isset($_GET['debug']) && $_GET['debug'])
+{
+    ini_set('error_reporting', E_ALL);ini_set('display_errors',true);
+}
 
 $date = new DateTime('now');
 $ymd = $date->format('Y-m-d');
-
-//echo "<h1>$ymd</h1>\n";
-
 $aImages = glob("$ymd*.jpg");
 
-$aSearch = ["$ymd-",'.jpg'];
+//echo '<pre>';var_dump($ymd,$aImages);die();
+
+$iNbImages = count($aImages);
+
+if($iNbImages == 0)
+{
+    $date = new DateTime('now -1 days');
+    $ymd = $date->format('Y-m-d');
+    $aImages = glob("$ymd/$ymd*.jpg");
+}
+
+$aSearch = ["$ymd/","$ymd-",'.jpg'];
 
 $aDatas = [];
 
@@ -23,10 +35,8 @@ foreach($aImages as $img)
         'time' => $time,
         'src'  => $img,
         ];
-    //echo "<img src=\"$img\" width=\"400\" height=\"220\"/>$time<hr/>";
-    //echo "<img src=\"$img\" /><hr />";
-
 }
+
 $firstImage = $aDatas[0];
 $jsonData = json_encode($aDatas);
 ?>
@@ -38,7 +48,7 @@ $jsonData = json_encode($aDatas);
     </head>
 <body>
     <div class="preview">
-        <p>Daily images: <?php echo $ymd; ?></p>
+        <p>Daily images ( <?php echo $iNbImages; ?> ): <?php echo $ymd; ?></p>
         <p>see: https://github.com/Jodaille/LyceeDesAndaines/blob/master/snapshots/preview.php</p>
 
 <?php
