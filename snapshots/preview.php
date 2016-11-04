@@ -19,7 +19,7 @@ $iNbImages = count($aImages);
 
 if($iNbImages == 0)
 {
-    $date = new DateTime('now -1 days');
+    $date = new DateTime('now -2 days');
     $ymd = $date->format('Y-m-d');
     $aImages = glob("$ymd/$ymd*.jpg");
 }
@@ -70,14 +70,21 @@ window.onload = function() {
           prop,
           value;
 
-      function changeImage(){
+    function changeImage(){
+
+
         prop                 = keys[imageID];
         value                = imagesDatas[prop];
-        imagePreview.src     = value.src;
-        spanTime.textContent = value.time;
-        imageID++;
-      }
-      setInterval(changeImage, 200);
+        if(imagesDatas[prop] !== undefined)
+        {
+            imagePreview.src     = value.src;
+            spanTime.textContent = value.time;
+
+            imageID++;
+        }
+
+    }
+    setInterval(changeImage, 200);
 }
 
 
