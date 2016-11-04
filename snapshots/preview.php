@@ -9,7 +9,21 @@ if(isset($_GET['debug']) && $_GET['debug'])
     ini_set('error_reporting', E_ALL);ini_set('display_errors',true);
 }
 
-$date = new DateTime('now');
+if(isset($_GET['day']))
+{
+    $day = 'now';
+    if($_GET['day'] == 'yesterday')
+    {
+        $day = "$day -1 day";
+    }
+    $date = new DateTime($day);
+
+}
+else
+{
+    $date = new DateTime('now');
+}
+
 $ymd = $date->format('Y-m-d');
 $aImages = glob("$ymd*.jpg");
 
