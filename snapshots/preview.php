@@ -40,6 +40,7 @@ $iNbImages = count($aImages);
 if($iNbImages == 0)
 {
     $aImages = glob("$ymd/$ymd*.jpg");
+    $iNbImages = count($aImages);
 }
 
 // time in image filename
