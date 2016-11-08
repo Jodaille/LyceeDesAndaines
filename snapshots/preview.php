@@ -161,8 +161,9 @@ $jsonData = json_encode($aDatas);
         <p>Daily images ( <?php echo $iNbImages; ?> ): <?php echo $ymd; ?>
             <span id="time"></span>
             <span id="selectedImage"><a id="currentImgLink" target="_blank"></span>
-            <a href="/snapshots/preview.php?day=yesterday">(see yesterday)</a>
-            <a id="displayMeteo" href="#">display Meteo</a>
+            <a href="/snapshots/preview.php?day=yesterday">(see yesterday)</a>&nbsp;
+            <a href="/snapshots/preview.php?date=2016-11-01">(see 2016-11-01)</a>
+            <a id="displayMeteo" href="#">Meteo</a>
         </p>
     </div>
 
