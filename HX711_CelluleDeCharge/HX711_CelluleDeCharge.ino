@@ -11,54 +11,54 @@ void setup() {
   Serial.begin(38400);
   Serial.println("HX711 Demo");
 
-  Serial.println("Initializing the scale");
-  // parameter "gain" is ommited; the default value 128 is used by the library
+  Serial.println("Initialisation de la balance");
+  // parametre "gain" est ommis; la valeur par defaut de la librairie est 128
   // HX711.DOUT  - pin #A1
   // HX711.PD_SCK - pin #A0
   scale.begin(A1, A0);
 
-  Serial.println("Before setting up the scale:");
-  Serial.print("read: \t\t");
-  Serial.println(scale.read());     // print a raw reading from the ADC
+  Serial.println("Avant reglage de la balance:");
+  Serial.print("lecture: \t\t");
+  Serial.println(scale.read());     // affiche la lecture brute du convetisseur (ADC)
 
-  Serial.print("read average: \t\t");
+  Serial.print("lecture moyenne de 20 lectures: \t\t");
   Serial.println(scale.read_average(20));   // print the average of 20 readings from the ADC
 
-  Serial.print("get value: \t\t");
+  Serial.print("affiche la moyenne de 5 lectures moins le poids de tare (pas encore defini): \t\t");
   Serial.println(scale.get_value(5));   // print the average of 5 readings from the ADC minus the tare weight (not set yet)
 
-  Serial.print("get units: \t\t");
+  Serial.print("moyenne de 5 lectures moins la tare divise par le parametre SCALE (balance): \t\t");
   Serial.println(scale.get_units(5), 1);  // print the average of 5 readings from the ADC minus tare weight (not set) divided
             // by the SCALE parameter (not set yet)
 
-  scale.set_scale(2280.f);                      // this value is obtained by calibrating the scale with known weights; see the README for details
-  scale.tare();               // reset the scale to 0
+  scale.set_scale(2280.f);// valeur obtenue en calibrant la balance avec dees poids connus; voir le README
+  scale.tare();           // remise à 0 de la balance
 
-  Serial.println("After setting up the scale:");
+  Serial.println("Apres reglage de la balance:");
 
-  Serial.print("read: \t\t");
+  Serial.print("lecture: \t\t");
   Serial.println(scale.read());                 // print a raw reading from the ADC
 
-  Serial.print("read average: \t\t");
+  Serial.print("lecture moyenne: \t\t");
   Serial.println(scale.read_average(20));       // print the average of 20 readings from the ADC
 
-  Serial.print("get value: \t\t");
+  Serial.print("valeur: \t\t");
   Serial.println(scale.get_value(5));   // print the average of 5 readings from the ADC minus the tare weight, set with tare()
 
-  Serial.print("get units: \t\t");
+  Serial.print("valeur avec calibration: \t\t");
   Serial.println(scale.get_units(5), 1);        // print the average of 5 readings from the ADC minus tare weight, divided
             // by the SCALE parameter set with set_scale
 
-  Serial.println("Readings:");
+  Serial.println("Lectures:");
 }
 
 void loop() {
-  Serial.print("one reading:\t");
+  Serial.print("une lecture:\t");
   Serial.print(scale.get_units(), 1);
-  Serial.print("\t| average:\t");
+  Serial.print("\t| moyenne:\t");
   Serial.println(scale.get_units(10), 1);
 
-  scale.power_down();             // put the ADC in sleep mode
+  scale.power_down();// mise en veille du convertisseur (ADC)
   delay(5000);
   scale.power_up();
 }
